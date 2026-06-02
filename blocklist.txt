@@ -1,0 +1,202 @@
+! Title: Khoa - Custom Blocklist
+! Description: Filter list cá nhân — chặn popup OAuth, PWA spam, scam domain
+! Homepage: https://github.com/Khoaamz/BlockADS
+! Expires: 1 day
+! Version: 2026.06.02
+! Last modified: 2026-06-02
+
+! ##########################################################
+! # SECTION: luottruyen* (scam lô đề)
+! # Added: 2026-06-02  |  Source: geo-log-2026-06-02T02-21-13.json
+! ##########################################################
+
+! =========================================================
+! TẦNG 1: CHẶN THEO OAUTH CLIENT_ID  (MẠNH NHẤT — chống đổi domain)
+! Client_id này là Google Cloud Project của họ, hardcoded.
+! Đổi domain mới vẫn dùng client_id cũ → vẫn bị chặn.
+! =========================================================
+/accounts\.google\.com\/.*client_id=620606526290-hdpso4913bdf0iak37etuq47n928gq1v/
+/accounts\.google\.com\/.*client_id=620606526290/
+
+! Chặn cả khi client_id nằm trong continue= URL (Google nest URL)
+/accounts\.google\.com\/.*client_id%3D620606526290-hdpso4913bdf0iak37etuq47n928gq1v/
+
+! =========================================================
+! TẦNG 2: CHẶN THEO REDIRECT_URI KEYWORD  (bắt khi họ đổi sang client_id mới
+! nhưng giữ pattern tên miền)
+! =========================================================
+/accounts\.google\.com\/.*redirect_uri=.*luottruyen/
+/accounts\.google\.com\/.*redirect_uri%3D.*luottruyen/
+/accounts\.google\.com\/.*redirect_uri=.*lottruyen/
+/accounts\.google\.com\/.*redirect_uri=.*xoso/
+/accounts\.google\.com\/.*redirect_uri=.*lode/
+/accounts\.google\.com\/.*redirect_uri=.*taixiu/
+
+! =========================================================
+! TẦNG 3: WILDCARD DOMAIN PATTERN  (bắt domain anh em luottruyen1-99.*)
+! =========================================================
+||luottruyen*^
+||luottruyen*.com^
+||luottruyen*.net^
+||luottruyen*.org^
+||luottruyen*.vip^
+||luottruyen*.online^
+||luottruyen*.top^
+||luottruyen*.xyz^
+||luottruyen*.io^
+||lottruyen*^
+||luot-truyen*^
+||luot.truyen*^
+
+! Một vài keyword scam lô đề/xổ số phổ biến (mở rộng nếu cần)
+! ||lode*.com^
+! ||xoso*.com^
+! ||taixiu*.com^
+! ||dabong*.com^
+
+! =========================================================
+! TẦNG 4: CHẶN POPUP DO BẤT KỲ TRANG NÀO MỞ ACCOUNTS.GOOGLE.COM
+! ($popup chỉ apply cho window.open / target=_blank, không chặn user click thật)
+! =========================================================
+||accounts.google.com/v3/signin/accountchooser$popup,domain=~google.com|~googleusercontent.com|~gstatic.com
+||accounts.google.com/o/oauth2/auth$popup,domain=~google.com|~googleusercontent.com|~gstatic.com
+||accounts.google.com/o/oauth2/v2/auth$popup,domain=~google.com|~googleusercontent.com|~gstatic.com
+
+! =========================================================
+! TẦNG 5: CỤ THỂ luottruyen7.com (giữ lại để chắc ăn)
+! =========================================================
+||luottruyen7.com^$popup
+luottruyen7.com$popup
+||luottruyen7.com/Account/ExternalLogin
+||luottruyen7.com/manifest.json
+||luottruyen7.com/service-worker.js
+||luottruyen7.com/sw.js
+
+! =========================================================
+! TẦNG 6: SCRIPTLET — vô hiệu hoá window.open + Google Identity API
+! Áp dụng cho mọi domain luottruyen*
+! =========================================================
+luottruyen7.com,luottruyen8.com,luottruyen9.com,luottruyen10.com#%#//scriptlet('prevent-window-open', 'accounts.google.com')
+luottruyen7.com,luottruyen8.com,luottruyen9.com,luottruyen10.com#%#//scriptlet('set-constant', 'google.accounts.id.prompt', 'noopFunc')
+luottruyen7.com,luottruyen8.com,luottruyen9.com,luottruyen10.com#%#//scriptlet('set-constant', 'google.accounts.id.initialize', 'noopFunc')
+luottruyen7.com,luottruyen8.com,luottruyen9.com,luottruyen10.com#%#//scriptlet('set-constant', 'google.accounts.oauth2', 'noopFunc')
+
+! =========================================================
+! TẦNG 7: ẨN CSS — Google One Tap iframe + login modal (mọi luottruyen*)
+! =========================================================
+luottruyen7.com,luottruyen8.com,luottruyen9.com,luottruyen10.com##iframe[src*="accounts.google.com"]
+luottruyen7.com,luottruyen8.com,luottruyen9.com,luottruyen10.com##iframe[src*="gsi/iframe"]
+luottruyen7.com,luottruyen8.com,luottruyen9.com,luottruyen10.com##div[id^="g_id_"]
+luottruyen7.com,luottruyen8.com,luottruyen9.com,luottruyen10.com###credential_picker_container
+luottruyen7.com,luottruyen8.com,luottruyen9.com,luottruyen10.com###credential_picker_iframe
+luottruyen7.com,luottruyen8.com,luottruyen9.com,luottruyen10.com##.modal-backdrop
+
+
+! ##########################################################
+! # SECTION: Mobile ad networks (popup + ads bẩn trên điện thoại)
+! # Added: 2026-06-02
+! # Áp dụng cho mọi site — chặn cả khi site khác nhúng các mạng này
+! ##########################################################
+
+! ---- Popup / popunder ad networks (cực phổ biến với site scam VN) ----
+||popads.net^
+||popcash.net^
+||popmyads.com^
+||popunder.net^
+||popupclick.com^
+||propellerads.com^
+||propeller-tracking.com^
+||propellerclick.com^
+||onclickads.net^
+||onclickmega.com^
+||onclkds.com^
+||onclickperformance.com^
+||onclickperfomance.com^
+||clickadu.com^
+||clkmon.com^
+||hilltopads.net^
+||hilltopads.com^
+||clickaine.com^
+
+! ---- Adult / scam mobile ad networks ----
+||exoclick.com^
+||exosrv.com^
+||juicyads.com^
+||trafficstars.com^
+||trafficfactory.biz^
+||trafficjunky.net^
+||adsterra.com^
+||adsterranet.com^
+||displaynetworkads.com^
+||adskeeper.com^
+||mgid.com^
+||revcontent.com^
+||mediavine.com^
+
+! ---- Push notification spam (bọn này ép subscribe push notif) ----
+||pushnative.com^
+||pushancarry.com^
+||pushwhy.com^
+||push-notification.org^
+||subscribe.pushwhy.com^
+||rmbnetwork.com^
+||shavar.services.mozilla.com^
+
+! ---- Tracking/redirect rút ngắn URL bẩn ----
+||shorte.st^
+||adf.ly^
+||linkvertise.com^
+||boost.ink^
+||linkbucks.com^
+||cuon.in^
+||tinyurl.com^$third-party
+||ouo.io^
+||shrtco.de^
+
+! ---- Crypto miner / coinhive clone ----
+||coinhive.com^
+||coin-hive.com^
+||jsecoin.com^
+||cryptoloot.com^
+||webminerpool.com^
+||webmine.cz^
+
+! ---- Common Vietnamese gambling/scam ad domains ----
+||adcombo.com^
+||adcash.com^
+||monetag.com^
+||cpmstar.com^
+||lockerdome.com^
+
+! ---- Chặn $popup tổng quát (bất kỳ trang nào tự mở popup) ----
+! Cẩn thận: rule này có thể chặn cả popup hợp lệ (vd: cửa sổ thanh toán)
+! Nếu thấy bị quá đà, comment dòng dưới đi
+! *$popup,third-party
+
+! ---- Chặn auto-redirect tới deeplink app (Telegram, Zalo, các app cờ bạc) ----
+||t.me/joinchat$popup
+||telegram.me/joinchat$popup
+
+! ##########################################################
+! # SECTION: Element hiding chung cho mobile (cosmetic)
+! # Ẩn floating button, sticky banner, full-screen interstitial
+! ##########################################################
+
+! Floating Telegram/Zalo/Messenger button góc màn hình (scam thường nhúng)
+##a[href*="t.me/"][style*="position:fixed" i]
+##a[href*="zalo.me/"][style*="position:fixed" i]
+##a[href*="m.me/"][style*="position:fixed" i]
+##div[class*="floating-zalo" i]
+##div[class*="floating-telegram" i]
+##div[class*="float-tele" i]
+##div[id*="float-zalo" i]
+
+! Sticky banner / floating popup chung
+##div[class*="popup-overlay" i]:not(html):not(body)
+##div[class*="modal-popup" i]:not(html):not(body)
+##div[class*="interstitial" i]
+##div[id*="interstitial" i]
+##.fixed-bottom-ad
+##.bottom-ad-bar
+##.app-download-banner
+##.smart-app-banner
