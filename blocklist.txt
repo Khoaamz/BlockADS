@@ -2,7 +2,7 @@
 ! Description: Filter list cá nhân — chặn popup OAuth, PWA spam, scam domain
 ! Homepage: https://github.com/Khoaamz/BlockADS
 ! Expires: 1 day
-! Version: 2026.06.02
+! Version: 2026.06.02.1
 ! Last modified: 2026-06-02
 
 ! ##########################################################
@@ -34,19 +34,24 @@
 
 ! =========================================================
 ! TẦNG 3: WILDCARD DOMAIN PATTERN  (bắt domain anh em luottruyen1-99.*)
+! ⚠️ ĐÃ DISABLE (2026-06-02): luottruyen* thực ra là site đọc truyện tranh
+! (lạm dụng OAuth popup + PWA, KHÔNG phải scam lô đề như nghĩ ban đầu).
+! Chặn cả domain sẽ block luôn nội dung truyện → quá đà.
+! Tầng 1 (client_id), Tầng 4 ($popup), Tầng 5-7 đã đủ để diệt popup.
+! Bỏ comment nếu sau này muốn cấm hẳn site.
 ! =========================================================
-||luottruyen*^
-||luottruyen*.com^
-||luottruyen*.net^
-||luottruyen*.org^
-||luottruyen*.vip^
-||luottruyen*.online^
-||luottruyen*.top^
-||luottruyen*.xyz^
-||luottruyen*.io^
-||lottruyen*^
-||luot-truyen*^
-||luot.truyen*^
+! ||luottruyen*^
+! ||luottruyen*.com^
+! ||luottruyen*.net^
+! ||luottruyen*.org^
+! ||luottruyen*.vip^
+! ||luottruyen*.online^
+! ||luottruyen*.top^
+! ||luottruyen*.xyz^
+! ||luottruyen*.io^
+! ||lottruyen*^
+! ||luot-truyen*^
+! ||luot.truyen*^
 
 ! Một vài keyword scam lô đề/xổ số phổ biến (mở rộng nếu cần)
 ! ||lode*.com^
